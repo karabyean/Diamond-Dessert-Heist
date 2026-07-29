@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Diamond Dessert Heist — Pink Noir Edition</title>
+<style>
+  :root{
+    --bg:#09090b;--panel:#141216;--panel2:#211a20;--text:#fff1f7;--muted:#d9afbe;
+    --gold:#f6b6cf;--pink:#ffcadf;--red:#ff7fa8;--green:#91d7b3;--blue:#d9a7c6;
+    --shadow:0 18px 50px rgba(0,0,0,.38)
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+    radial-gradient(circle at top left,rgba(246,182,207,.13),transparent 28%),
+    radial-gradient(circle at top right,rgba(255,202,223,.13),transparent 24%),
+    var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial,sans-serif;min-height:100vh}
+  button,input,select{font:inherit}
+  .app{max-width:1180px;margin:auto;padding:20px}
+  .topbar{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .brand{font-weight:900;letter-spacing:.04em;font-size:clamp(20px,3vw,32px)}
+  .brand span{color:var(--gold)}
+  .stats{display:flex;gap:8px;flex-wrap:wrap}
+  .pill{background:rgba(255,255,255,.07);padding:8px 11px;border:1px solid rgba(255,255,255,.08);border-radius:999px;font-size:14px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015)),var(--panel);border:1px solid rgba(255,255,255,.09);border-radius:20px;box-shadow:var(--shadow)}
+  .main{padding:22px;min-height:660px;position:relative;overflow:hidden}
+  .side{padding:16px;display:flex;flex-direction:column;gap:12px;height:max-content;position:sticky;top:14px}
+  .eyebrow{font-size:12px;text-transform:uppercase;color:var(--gold);letter-spacing:.14em;font-weight:800}
+  h1{font-size:clamp(28px,4vw,48px);line-height:1.02;margin:8px 0 12px}
+  h2{margin:0 0 8px;font-size:24px}
+  p{line-height:1.62;color:#e7eafa}
+  .muted{color:var(--muted)}
+  .scene-art{height:190px;border-radius:16px;margin:16px 0;background:
+    linear-gradient(135deg,rgba(244,201,93,.18),rgba(240,139,180,.12)),
+    repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 10px,transparent 10px 20px);
+    display:flex;align-items:center;justify-content:center;font-size:76px;border:1px solid rgba(255,255,255,.08)}
+  .choices{display:grid;gap:10px;margin-top:18px}
+  .choice{width:100%;text-align:left;padding:14px 15px;background:var(--panel2);color:var(--text);border:1px solid rgba(255,255,255,.09);border-radius:13px;cursor:pointer;transition:.15s}
+  .choice:hover{transform:translateY(-1px);border-color:var(--gold);background:#2a2028}
+  .choice:disabled{opacity:.45;cursor:not-allowed}
+  .choice strong{color:var(--gold);margin-right:8px}
+  .side button,.smallbtn{border:0;background:#263256;color:white;padding:11px 12px;border-radius:11px;cursor:pointer}
+  .side button:hover,.smallbtn:hover{background:#31406e}
+  .primary{background:linear-gradient(135deg,#f6b6cf,#ffcadf)!important;color:#160d12!important;font-weight:900}
+  .danger{background:#682e42!important}
+  .log{max-height:180px;overflow:auto;font-size:13px;color:var(--muted);line-height:1.5}
+  .mini{padding:12px;background:rgba(255,255,255,.045);border-radius:13px;border:1px solid rgba(255,255,255,.06)}
+  .mini h3{margin:0 0 8px;font-size:14px}
+  .tag{display:inline-block;padding:4px 7px;border-radius:999px;background:#252f52;margin:2px;font-size:12px}
+  .modal{position:fixed;inset:0;background:rgba(3,6,15,.82);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+  .modal.show{display:flex}
+  .modalbox{width:min(850px,100%);max-height:88vh;overflow:auto;background:var(--panel);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px;box-shadow:var(--shadow)}
+  .close{float:right;background:#2a355d;color:white;border:0;border-radius:9px;padding:8px 10px;cursor:pointer}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
+  .tabs button{background:#263256;color:white;border:0;padding:9px 11px;border-radius:10px;cursor:pointer}
+  .listitem{padding:10px 12px;background:rgba(255,255,255,.04);border-radius:10px;margin:7px 0}
+  .puzzle{padding:16px;border:1px solid rgba(244,201,93,.35);background:rgba(244,201,93,.07);border-radius:14px;margin:14px 0}
+  .puzzle input,.puzzle select{width:100%;padding:11px;border-radius:9px;border:1px solid #47557f;background:#11182f;color:white;margin:8px 0}
+  .toast{position:fixed;right:18px;bottom:18px;max-width:340px;background:#1b2445;border:1px solid rgba(255,255,255,.12);padding:13px 15px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:80}
+  .toast.show{display:block}
+  .intro-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+  .intro-actions button{padding:13px 17px;border-radius:12px;border:0;cursor:pointer}
+  .ending{padding:18px;border-radius:15px;background:rgba(97,208,149,.08);border:1px solid rgba(97,208,149,.35)}
+  .bad{background:rgba(255,107,107,.08);border-color:rgba(255,107,107,.4)}
+  @media(max-width:850px){.layout{grid-template-columns:1fr}.side{position:static}.main{min-height:0}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">THE <span>DIAMOND DESSERT</span> HEIST</div>
+    <div class="stats">
+      <div class="pill" id="timePill">🕘 9:00 PM</div>
+      <div class="pill" id="heartPill">❤️❤️❤️</div>
+      <div class="pill" id="scorePill">⭐ 0</div>
+      <div class="pill" id="hintPill">🔍 3</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <main class="card main" id="main"></main>
+
+    <aside class="card side">
+      <button class="primary" onclick="openCaseFile()">📁 Case File</button>
+      <button onclick="openMap()">🗺️ Mansion Map</button>
+      <button onclick="useHint()">🔍 Use Hint</button>
+      <button onclick="openAccusation()">⚖️ Make an Accusation</button>
+      <button onclick="restartGame()">↻ Restart Game</button>
+      <div class="mini">
+        <h3>Inventory</h3>
+        <div id="inventory" class="muted">Empty</div>
+      </div>
+      <div class="mini">
+        <h3>Current Objective</h3>
+        <div id="objective" class="muted">Begin the investigation.</div>
+      </div>
+      <div class="mini">
+        <h3>Investigation Log</h3>
+        <div id="log" class="log"></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="modal" id="modal"><div class="modalbox" id="modalbox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const GAME = {
+  culprit:"Victoria Blackwood",
+  motive:"Insurance fraud and concealment of a replica diamond",
+  method:"Victoria used the remote lighting reset, unlocked the dome before the reveal, and used the dumbwaiter to move the cupcake",
+  location:"Inside the false bottom of the wine cellar refrigeration unit"
+};
+
+let state;
+
+const scenes = {
+intro:{
+  title:"A Million-Dollar Dessert",
+  icon:"🧁💎",
+  text:`Blackwood Manor is packed with celebrities, chefs, magicians, and people who clearly enjoy being photographed near expensive food. At precisely 9:00 p.m., host Victoria Blackwood unveils a cupcake topped with the famous Aurora Diamond.<br><br>The lights die. Glass shatters. Someone whispers, “Run.” When the chandeliers return, the locked glass dome is still in place—but the cupcake and diamond are gone.`,
+  objective:"Secure the crime scene and find your first reliable clue.",
+  choices:[
+    ["Examine the locked glass dome","dome"],
+    ["Inspect the floor beneath the display","floor"],
+    ["Question Victoria immediately","victoria1"],
+    ["Follow the frosting trail toward the stairs","trail1"]
+  ]
+},
+dome:{
+  title:"The Impossible Dome",
+  icon:"🔒",
+  text:`The glass dome is locked and undamaged. Yet the cupcake vanished from inside it. A close inspection reveals a thin waxy line around the base and faint scratches near the rear hinge.`,
+  objective:"Determine how the cupcake left the locked display.",
+  onEnter:()=>gainEvidence("Wax residue around the display base",10),
+  choices:[
+    ["Test whether the base can rotate","rotate"],
+    ["Inspect the rear hinge","hinge"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+rotate:{
+  title:"A Hidden Mechanism",
+  icon:"⚙️",
+  text:`The silver base rotates one quarter-turn and reveals a narrow chute descending into the wall. The display was never truly sealed; it was connected to the mansion's old service system.`,
+  objective:"Find where the hidden chute leads.",
+  onEnter:()=>{gainEvidence("The display connects to a concealed service chute",25); addContradiction("Victoria described the dome as completely sealed, but the base contains a hidden chute.");},
+  choices:[
+    ["Search the library for old mansion plans","library"],
+    ["Go to the security office","security"],
+    ["Investigate the wine cellar","cellarDoor"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+hinge:{
+  title:"Scratches on the Hinge",
+  icon:"🔍",
+  text:`The scratches are fresh, but they are on the decorative outer hinge—not the lock. Someone wanted investigators to focus on forced entry. A tiny speck of silver stage glitter is caught in the groove.`,
+  objective:"Decide whether the glitter is real evidence or a planted distraction.",
+  onEnter:()=>gainEvidence("Stage glitter planted on the decorative hinge",10),
+  choices:[
+    ["Question Magic Max about the glitter","max1"],
+    ["Compare it with Dave's jacket","dave1"],
+    ["Test the glitter in the kitchen","kitchen"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+floor:{
+  title:"Under the Display",
+  icon:"🕵️",
+  text:`Beneath the table you find a broken watch clasp, a pink frosting smear, and a triangular chip of glass. The chip does not match the dome.`,
+  objective:"Identify which objects belong to the crime and which are distractions.",
+  onEnter:()=>{addInventory("Broken watch clasp"); gainEvidence("Broken watch clasp found beneath display",10);},
+  choices:[
+    ["Examine the glass chip","glass"],
+    ["Inspect the frosting smear","frosting"],
+    ["Question Disco Dave about the clasp","dave1"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+glass:{
+  title:"The Wrong Glass",
+  icon:"🔬",
+  text:`The chip is green-tinted safety glass. The dome is clear crystal. Looking across the room, you notice a cracked emergency-light cover above the stage.`,
+  objective:"Find out why the emergency light was damaged.",
+  onEnter:()=>gainEvidence("Glass chip came from the emergency-light cover, not the dome",15),
+  choices:[
+    ["Inspect the emergency lighting controls","security"],
+    ["Question Magic Max","max1"],
+    ["Return to the floor evidence","floor"]
+  ]
+},
+frosting:{
+  title:"Two Different Frostings",
+  icon:"🍓",
+  text:`The smear looks pink, but it smells like raspberry. Chef Coco's displayed cupcakes use strawberry frosting. Someone used a look-alike frosting to create a false trail.`,
+  objective:"Trace the source of the raspberry frosting.",
+  onEnter:()=>{gainEvidence("The planted frosting trail is raspberry, not Chef Coco's strawberry",20); addContradiction("The visible trail appears to come from Coco's cupcakes, but its flavor is different.");},
+  choices:[
+    ["Follow the false frosting trail upstairs","trail1"],
+    ["Question Chef Coco","coco1"],
+    ["Search the kitchen","kitchen"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+victoria1:{
+  title:"The Host's Story",
+  icon:"👑",
+  text:`Victoria says the diamond was placed on the cupcake at 8:45 p.m., the dome was locked at 8:50, and nobody touched the display afterward. She insists the blackout must have been caused by “that magician and his ridiculous equipment.”`,
+  objective:"Verify Victoria's timeline.",
+  onEnter:()=>addTestimony("Victoria: Diamond placed at 8:45, dome locked at 8:50, no one touched it afterward."),
+  choices:[
+    ["Ask who knew the security code","victoriaCode"],
+    ["Check the security office logs","security"],
+    ["Question Magic Max","max1"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+victoriaCode:{
+  title:"A Convenient Answer",
+  icon:"🔐",
+  text:`Victoria claims only the head of security knows the mansion code. But when you ask where the security office is, she answers instantly: “Down the west corridor, code panel beside the blue vase.” She quickly adds that she was only guessing.`,
+  objective:"Check whether Victoria accessed the security system.",
+  onEnter:()=>addContradiction("Victoria claimed she did not know the security system, yet knew its exact location and layout."),
+  choices:[
+    ["Go to the security office","security"],
+    ["Search Victoria's study","study"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+trail1:{
+  title:"The Frosting Trail",
+  icon:"🐾",
+  text:`Pink marks climb the stairs, cross the upstairs hall, and stop beside a half-open guest room. Pickles the dog is licking frosting from his nose.`,
+  objective:"Determine whether the trail was created by the thief, the dog, or both.",
+  choices:[
+    ["Follow Pickles","pickles"],
+    ["Inspect the guest room","guestroom"],
+    ["Examine the trail carefully","trailPuzzle"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+trailPuzzle:{
+  title:"Observation Challenge",
+  icon:"🧠",
+  text:`The first three marks are smooth fingertip smears. The later marks are irregular paw prints. Which explanation best fits the evidence?`,
+  puzzle:{type:"select",options:[
+    "Pickles stole the diamond alone",
+    "Someone planted a short trail, then Pickles followed and extended it",
+    "Chef Coco dropped the cupcake while running",
+    "The marks are unrelated"
+  ],answer:1,reward:20,evidence:"A person planted the first part of the frosting trail; Pickles extended it"},
+  choices:[["Return to the upstairs hall","trail1"]]
+},
+pickles:{
+  title:"Pickles Knows Something",
+  icon:"🐶",
+  text:`Pickles darts downstairs, scratches at the library wall, then runs toward the cellar door. A blue ribbon is caught on his collar. It matches the ribbon tied around Victoria's presentation folder.`,
+  objective:"Use Pickles' route to locate the hidden service passage.",
+  onEnter:()=>{addInventory("Blue ribbon from Pickles' collar"); gainEvidence("Blue ribbon matching Victoria's folder found on Pickles",15);},
+  choices:[
+    ["Inspect the library wall","library"],
+    ["Follow Pickles to the cellar","cellarDoor"],
+    ["Question Victoria about the ribbon","victoriaRibbon"],
+    ["Return upstairs","trail1"]
+  ]
+},
+victoriaRibbon:{
+  title:"The Ribbon",
+  icon:"🎀",
+  text:`Victoria says dozens of guests received identical ribbons. That is technically true, but hers has a distinctive gold-stitched edge—the same stitching on the ribbon from Pickles.`,
+  objective:"Find where Pickles encountered Victoria's ribbon.",
+  onEnter:()=>addContradiction("Victoria denied the ribbon was uniquely hers, but the gold-stitched edge matches her folder."),
+  choices:[
+    ["Search Victoria's study","study"],
+    ["Inspect the library wall","library"],
+    ["Go to the cellar","cellarDoor"]
+  ]
+},
+guestroom:{
+  title:"Disco Dave's Guest Room",
+  icon:"🪩",
+  text:`Music plays from a portable speaker. Dave's spare shoes sit by the bed. One sole contains cake crumbs, but they are chocolate—not the vanilla ceremonial cupcake. A receipt shows he bought cake downstairs at 8:20 p.m.`,
+  objective:"Separate Dave's embarrassing secret from the actual crime.",
+  onEnter:()=>{gainEvidence("Dave's shoe crumbs came from a chocolate cake purchased before the theft",10); addTestimony("Receipt confirms Dave bought chocolate cake at 8:20 p.m.");},
+  choices:[
+    ["Search the room for the missing watch piece","daveClasp"],
+    ["Return to the upstairs hall","trail1"]
+  ]
+},
+daveClasp:{
+  title:"An Innocent Clasp",
+  icon:"⌚",
+  text:`A repair envelope confirms Dave's watch clasp broke during dance rehearsal at 7:40 p.m. A cleaner apparently swept the loose piece beneath the display table.`,
+  objective:"Remove a false suspect from your working theory.",
+  onEnter:()=>gainEvidence("Dave's broken clasp predates the theft and is unrelated",10),
+  choices:[["Return upstairs","trail1"],["Question Dave","dave1"]]
+},
+dave1:{
+  title:"Disco Dave",
+  icon:"🕺",
+  text:`Dave admits the clasp is his. He also admits sneaking chocolate cake upstairs because Victoria banned eating near the ballroom costumes. He says he saw Victoria near the display at 8:56 p.m., after she claimed nobody touched it.`,
+  objective:"Verify Dave's sighting.",
+  onEnter:()=>{addTestimony("Dave: Saw Victoria at the display at 8:56 p.m."); addContradiction("Victoria said no one touched the display after 8:50, but Dave saw her there at 8:56.");},
+  choices:[
+    ["Check the ballroom camera footage","security"],
+    ["Search Dave's room","guestroom"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+max1:{
+  title:"Magic Max",
+  icon:"🎩",
+  text:`Max is offended by the suggestion that he would use craft-store glitter in a professional act. He shows you his stage glitter: black hexagonal foil. The speck from the dome is silver and circular. His assistant confirms Max was behind the curtain from 8:55 through the blackout.`,
+  objective:"Identify who had access to silver circular glitter.",
+  onEnter:()=>{gainEvidence("The glitter on the dome does not match Max's equipment",10); addTestimony("Max's assistant places him behind the curtain from 8:55 through the blackout.");},
+  choices:[
+    ["Inspect the emergency-light cover","glass"],
+    ["Search Victoria's study","study"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+coco1:{
+  title:"Chef Coco",
+  icon:"👩‍🍳",
+  text:`Coco says her kitchen timer stopped at 8:58 because the outlet briefly lost power before the ballroom blackout. She was frosting strawberry cupcakes with two assistants. She angrily mentions Victoria requested a separate bowl of raspberry frosting “for photography.”`,
+  objective:"Find out who collected the raspberry frosting.",
+  onEnter:()=>{addTestimony("Coco: Victoria requested raspberry frosting for photography."); gainEvidence("Victoria had access to raspberry frosting used in the false trail",15);},
+  choices:[
+    ["Search the kitchen","kitchen"],
+    ["Ask about the missing cupcake","cocoCupcake"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+cocoCupcake:{
+  title:"The Missing Cupcake",
+  icon:"🧁",
+  text:`Coco admits she ate one cupcake after Victoria insulted her recipe. It was red velvet with cream-cheese frosting. Petty, but irrelevant.`,
+  objective:"Continue tracing the raspberry frosting.",
+  onEnter:()=>gainEvidence("Coco's missing cupcake was red velvet and unrelated",5),
+  choices:[["Search the kitchen","kitchen"],["Return to the ballroom","intro"]]
+},
+kitchen:{
+  title:"The Main Kitchen",
+  icon:"🍳",
+  text:`The kitchen is chaotic but organized. A sign-out sheet records special ingredients. At 8:42 p.m., “V.B.” signed out one bowl of raspberry frosting and a silver decorating brush.`,
+  objective:"Connect the special ingredients to planted evidence.",
+  onEnter:()=>{gainEvidence("Ingredient log shows V.B. collected raspberry frosting and a silver decorating brush",25); addContradiction("Victoria blamed Coco's frosting, but Victoria herself collected the raspberry frosting.");},
+  choices:[
+    ["Inspect the dumbwaiter","dumbwaiter"],
+    ["Question Chef Coco","coco1"],
+    ["Go to the wine cellar","cellarDoor"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+dumbwaiter:{
+  title:"The Old Dumbwaiter",
+  icon:"🛗",
+  text:`The dumbwaiter connects the kitchen, library passage, ballroom display chute, and wine cellar. Fresh vanilla crumbs cling to the track. Someone recently sent the ceremonial cupcake downward.`,
+  objective:"Trace the dumbwaiter's destination.",
+  onEnter:()=>gainEvidence("Fresh vanilla crumbs in the dumbwaiter link the cupcake to the cellar route",25),
+  choices:[
+    ["Descend to the wine cellar","cellarDoor"],
+    ["Inspect the library passage","library"],
+    ["Return to the kitchen","kitchen"]
+  ]
+},
+library:{
+  title:"The Library Wall",
+  icon:"📚",
+  text:`Pickles scratches beside four books: <i>Midnight Feasts</i>, <i>Vanishing Acts</i>, <i>Cold Storage</i>, and <i>The Last Course</i>. Brass numbers on their spines read 9, 1, 3, and 7.`,
+  objective:"Open the hidden service passage.",
+  puzzle:{type:"code",answer:"9137",reward:20,evidence:"Library book code opened the service passage"},
+  choices:[
+    ["Enter the hidden passage","passage",()=>state.flags.librarySolved],
+    ["Return to the ballroom","intro"]
+  ]
+},
+passage:{
+  title:"The Servants' Passage",
+  icon:"🕯️",
+  text:`The narrow corridor leads toward the ballroom chute and cellar. On a shelf lies Victoria's presentation folder, missing its blue ribbon. Inside is an insurance appraisal dated two weeks ago—and a note stating the displayed diamond was scheduled for independent verification tomorrow.`,
+  objective:"Determine why Victoria needed the diamond to disappear tonight.",
+  onEnter:()=>{gainEvidence("Victoria's folder contains a recent insurance appraisal and an imminent verification appointment",30); addInventory("Insurance appraisal");},
+  choices:[
+    ["Continue to the wine cellar","cellarDoor"],
+    ["Search Victoria's study","study"],
+    ["Return to the library","library"]
+  ]
+},
+study:{
+  title:"Victoria's Study",
+  icon:"🗄️",
+  text:`A locked desk has a four-digit keypad. A framed recipe reads: 3 cups flour, 1 cup sugar, 4 eggs, 2 teaspoons vanilla. A note beneath it says, “The perfect order matters.”`,
+  objective:"Open Victoria's desk.",
+  puzzle:{type:"code",answer:"3142",reward:25,evidence:"Victoria's desk code was hidden in her recipe"},
+  choices:[
+    ["Open the desk","deskOpen",()=>state.flags.studySolved],
+    ["Return to the hallway","intro"]
+  ]
+},
+deskOpen:{
+  title:"The Replica",
+  icon:"💠",
+  text:`Inside the desk is a jeweler's receipt for a high-quality replica of the Aurora Diamond. The purchase was made under Victoria's assistant's name. A remote control labeled “LIGHT RESET” lies beside it.`,
+  objective:"Link the replica and remote to the blackout and insurance scheme.",
+  onEnter:()=>{gainEvidence("Victoria purchased a replica diamond",35); gainEvidence("Victoria possessed the remote lighting reset",30); addInventory("Lighting reset remote");},
+  choices:[
+    ["Check the security logs","security"],
+    ["Go to the wine cellar","cellarDoor"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+security:{
+  title:"Security Office",
+  icon:"📹",
+  text:`The security terminal requests an event code. A printed note reads: “Emergency reset = month of opening + number of ballroom chandeliers.” The manor opened in April and the ballroom has eight chandeliers.`,
+  objective:"Access the security logs.",
+  puzzle:{type:"code",answer:"0412",reward:20,evidence:"Security terminal accessed using the emergency reset code"},
+  choices:[
+    ["Review lighting logs","lightLogs",()=>state.flags.securitySolved],
+    ["Review ballroom footage","footage",()=>state.flags.securitySolved],
+    ["Return to the ballroom","intro"]
+  ]
+},
+lightLogs:{
+  title:"Lighting Log",
+  icon:"⚡",
+  text:`The ballroom lighting reset was triggered remotely at 8:59:52 p.m. The registered remote belongs to Victoria Blackwood. A smaller power interruption hit the kitchen outlet at 8:58 p.m.—a test pulse from the same remote.`,
+  objective:"Prove who caused the blackout.",
+  onEnter:()=>{gainEvidence("Lighting logs show Victoria's remote triggered the blackout",35); addContradiction("Victoria blamed Max, but her registered remote caused both power interruptions.");},
+  choices:[
+    ["Review ballroom footage","footage"],
+    ["Search Victoria's study","study"],
+    ["Go to the wine cellar","cellarDoor"]
+  ]
+},
+footage:{
+  title:"Ballroom Footage",
+  icon:"🎥",
+  text:`The camera freezes during the blackout, but the 8:56 footage shows Victoria kneeling behind the display and rotating its base. She then wipes the handle with a napkin.`,
+  objective:"Find the cupcake and diamond.",
+  onEnter:()=>{gainEvidence("Footage shows Victoria operating the display chute at 8:56 p.m.",35); addContradiction("Victoria said she never touched the display after 8:50.");},
+  choices:[
+    ["Go to the wine cellar","cellarDoor"],
+    ["Search Victoria's study","study"],
+    ["Return to the ballroom","intro"]
+  ]
+},
+cellarDoor:{
+  title:"The Wine Cellar Door",
+  icon:"🚪",
+  text:`The cellar door is locked. A cold draft slips through the frame. The keypad asks: “What ends every feast?”`,
+  objective:"Enter the cellar before evidence is moved.",
+  puzzle:{type:"text",answer:"dessert",reward:15,evidence:"Cellar riddle solved"},
+  choices:[
+    ["Enter the cellar","cellar",()=>state.flags.cellarDoorSolved],
+    ["Return to the kitchen","kitchen"],
+    ["Return to the library","library"]
+  ]
+},
+cellar:{
+  title:"The Wine Cellar",
+  icon:"🍷",
+  text:`The dumbwaiter terminates beside a refrigeration unit. One compartment is colder than the others, but its temperature display flickers between 34°F and 43°F. Pickles growls at the bottom panel.`,
+  objective:"Search the refrigeration unit without destroying evidence.",
+  choices:[
+    ["Inspect the false bottom","falseBottom"],
+    ["Open the warm compartment","warmCompartment"],
+    ["Examine the temperature controls","tempPuzzle"],
+    ["Return to the cellar door","cellarDoor"]
+  ]
+},
+tempPuzzle:{
+  title:"Temperature Logic",
+  icon:"🌡️",
+  text:`The unit log shows the ceremonial cupcake was stored at 38°F. Which compartment is most likely concealing it without freezing the frosting?`,
+  puzzle:{type:"select",options:["34°F","38°F","43°F","Room temperature"],answer:1,reward:15,evidence:"The 38°F compartment matches the cupcake storage log"},
+  choices:[["Inspect the false bottom","falseBottom"],["Return to the cellar","cellar"]]
+},
+warmCompartment:{
+  title:"A Costly Mistake",
+  icon:"💨",
+  text:`You open the 43°F compartment. A spring-loaded tray knocks over a bottle, and the noise alerts someone upstairs. Evidence may now be moved.`,
+  objective:"Recover quickly and search the correct compartment.",
+  onEnter:()=>{loseHeart("You triggered a noise trap."); advance(20); state.flags.alerted=true;},
+  choices:[["Inspect the false bottom","falseBottom"],["Return to the cellar","cellar"]]
+},
+falseBottom:{
+  title:"The Hidden Compartment",
+  icon:"💎",
+  text:`Behind the lower panel is the ceremonial cupcake, slightly crushed but intact. Beneath it sits a velvet ring box containing the real Aurora Diamond. A second box holds a replica.`,
+  objective:"Build a complete accusation before Victoria escapes.",
+  onEnter:()=>{gainEvidence("The real diamond and replica were hidden in the refrigeration unit's false bottom",50); addInventory("Aurora Diamond"); state.flags.diamondFound=true;},
+  choices:[
+    ["Make the final accusation","ACCUSATION"],
+    ["Review the case file","CASEFILE"],
+    ["Search for additional proof","passage"]
+  ]
+}
+};
+
+function freshState(){
+ return {
+  scene:"intro", time:540, hearts:3, score:0, hints:3,
+  inventory:[], evidence:[], testimony:[], contradictions:[], log:[],
+  flags:{librarySolved:false,studySolved:false,securitySolved:false,cellarDoorSolved:false,diamondFound:false,alerted:false},
+  entered:{}, ended:false
+ };
+}
+
+function start(){
+ state=freshState(); render();
+ logEvent("The investigation begins at 9:00 p.m.");
+}
+
+function render(){
+ updateHUD();
+ const s=scenes[state.scene];
+ if(!s) return;
+ if(!state.entered[state.scene] && s.onEnter){ state.entered[state.scene]=true; s.onEnter(); updateHUD(); }
+ document.getElementById("objective").textContent=s.objective||"Continue the investigation.";
+ let html=`<div class="eyebrow">${formatTime(state.time)} • ${locationName(state.scene)}</div>
+ <h1>${s.title}</h1>
+ <div class="scene-art">${s.icon}</div>
+ <p>${s.text}</p>`;
+ if(s.puzzle && !state.flags[state.scene+"Solved"]){
+   html += renderPuzzle(s.puzzle,state.scene);
+ }
+ html += `<div class="choices">`;
+ (s.choices||[]).forEach((c,i)=>{
+   const enabled=typeof c[2]==="function"?c[2]():true;
+   html+=`<button class="choice" ${enabled?"":"disabled"} onclick="choose('${c[1]}')"><strong>${String.fromCharCode(65+i)}.</strong>${c[0]}</button>`;
+ });
+ html += `</div>`;
+ document.getElementById("main").innerHTML=html;
+ renderSide();
+ checkTimedEvents();
+}
+
+function renderPuzzle(p,scene){
+ let field="";
+ if(p.type==="code"||p.type==="text") field=`<input id="puzzleInput" placeholder="${p.type==="code"?"Enter code":"Type answer"}">`;
+ if(p.type==="select") field=`<select id="puzzleInput"><option value="">Choose an answer</option>${p.options.map((x,i)=>`<option value="${i}">${x}</option>`).join("")}</select>`;
+ return `<div class="puzzle"><strong>Puzzle</strong>${field}<button class="smallbtn primary" onclick="solvePuzzle('${scene}')">Submit Answer</button></div>`;
+}
+
+function solvePuzzle(scene){
+ const s=scenes[scene], p=s.puzzle, input=document.getElementById("puzzleInput").value.trim().toLowerCase();
+ let correct=false;
+ if(p.type==="select") correct=Number(input)===p.answer;
+ else correct=input===String(p.answer).toLowerCase();
+ if(correct){
+   const flag=scene+"Solved";
+   state.flags[flag]=true;
+   if(scene==="library")state.flags.librarySolved=true;
+   if(scene==="study")state.flags.studySolved=true;
+   if(scene==="security")state.flags.securitySolved=true;
+   if(scene==="cellarDoor")state.flags.cellarDoorSolved=true;
+   state.score+=p.reward; gainEvidence(p.evidence,0); toast(`Puzzle solved! +${p.reward} points`);
+   advance(10); render();
+ }else{
+   state.score=Math.max(0,state.score-5); toast("That answer does not fit the evidence. −5 points");
+   updateHUD();
+ }
+}
+
+function choose(target){
+ if(target==="ACCUSATION"){openAccusation();return}
+ if(target==="CASEFILE"){openCaseFile();return}
+ if(!scenes[target])return;
+ advance(actionCost(target));
+ state.scene=target;
+ render();
+}
+
+function actionCost(target){
+ if(["intro","floor","dome","trail1","kitchen","library","security","cellarDoor","cellar"].includes(target))return 10;
+ if(["victoria1","max1","coco1","dave1"].includes(target))return 15;
+ return 10;
+}
+
+function advance(min){
+ state.time+=min;
+ if(state.time>=720 && !state.ended){
+   state.time=720;
+   finalTimeout();
+ }
+}
+
+function checkTimedEvents(){
+ if(state.ended)return;
+ if(state.time>=600 && !state.flags.tenEvent){
+   state.flags.tenEvent=true; logEvent("10:00 p.m.: A car engine starts outside. Someone may be preparing to leave.");
+ }
+ if(state.time>=630 && !state.flags.moveEvent){
+   state.flags.moveEvent=true;
+   if(!state.flags.diamondFound) logEvent("10:30 p.m.: A metallic thump echoes from below the mansion.");
+ }
+ if(state.time>=690 && !state.flags.escapeEvent){
+   state.flags.escapeEvent=true; logEvent("11:30 p.m.: Victoria announces that she is ending the party early.");
+ }
+}
+
+function finalTimeout(){
+ state.ended=true;
+ document.getElementById("main").innerHTML=`<div class="ending bad"><h1>Midnight: The Culprit Escapes</h1><p>The investigation took too long. By the time police secure the mansion, the hidden compartment is empty.</p><p><strong>Final score:</strong> ${state.score}</p><button class="smallbtn primary" onclick="restartGame()">Play Again</button></div>`;
+ updateHUD();
+}
+
+function gainEvidence(item,pts=10){
+ if(!state.evidence.includes(item)){state.evidence.push(item);state.score+=pts;logEvent(`Evidence: ${item}${pts?` (+${pts})`:""}`);}
+}
+function addTestimony(x){if(!state.testimony.includes(x)){state.testimony.push(x);logEvent(`Testimony added: ${x}`)}}
+function addContradiction(x){if(!state.contradictions.includes(x)){state.contradictions.push(x);state.score+=10;logEvent(`Contradiction found (+10): ${x}`)}}
+function addInventory(x){if(!state.inventory.includes(x)&&state.inventory.length<6){state.inventory.push(x);logEvent(`Added to inventory: ${x}`)}}
+function loseHeart(reason){state.hearts--;logEvent(`${reason} Lost one heart.`); if(state.hearts<=0) lastChance();}
+function lastChance(){
+ state.hearts=1; state.score=Math.max(0,state.score-20);
+ alert("LAST CHANCE: Your investigation is nearly over. You recover one heart, but lose 20 points.");
+}
+function logEvent(x){state.log.unshift(`${formatTime(state.time)} — ${x}`);renderSide()}
+function renderSide(){
+ document.getElementById("inventory").innerHTML=state.inventory.length?state.inventory.map(x=>`<span class="tag">${x}</span>`).join(""):"Empty";
+ document.getElementById("log").innerHTML=state.log.slice(0,12).map(x=>`<div>${x}</div>`).join("");
+}
+function updateHUD(){
+ document.getElementById("timePill").textContent=`🕘 ${formatTime(state?.time||540)}`;
+ document.getElementById("heartPill").textContent="❤️".repeat(Math.max(0,state?.hearts||0))+"🖤".repeat(Math.max(0,3-(state?.hearts||0)));
+ document.getElementById("scorePill").textContent=`⭐ ${state?.score||0}`;
+ document.getElementById("hintPill").textContent=`🔍 ${state?.hints||0}`;
+}
+function formatTime(m){let h=Math.floor(m/60),min=m%60,ap=h>=12?"PM":"AM";h=h%12||12;return `${h}:${String(min).padStart(2,"0")} ${ap}`}
+function locationName(scene){
+ if(["intro","dome","rotate","hinge","floor","glass","frosting","victoria1","victoriaCode","dave1","max1"].includes(scene))return"Grand Ballroom";
+ if(["trail1","trailPuzzle","pickles","guestroom","daveClasp"].includes(scene))return"Upstairs";
+ if(["coco1","cocoCupcake","kitchen","dumbwaiter"].includes(scene))return"Main Kitchen";
+ if(["library","passage"].includes(scene))return"Library";
+ if(["study","deskOpen"].includes(scene))return"Victoria's Study";
+ if(["security","lightLogs","footage"].includes(scene))return"Security Office";
+ if(["cellarDoor","cellar","tempPuzzle","warmCompartment","falseBottom"].includes(scene))return"Wine Cellar";
+ return"Blackwood Manor";
+}
+function toast(msg){
+ const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2600)
+}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+function showModal(html){document.getElementById("modalbox").innerHTML=`<button class="close" onclick="closeModal()">✕</button>${html}`;document.getElementById("modal").classList.add("show")}
+function openCaseFile(){
+ showModal(`<h2>📁 Case File</h2>
+ <div class="tabs"><button onclick="caseTab('evidence')">Evidence</button><button onclick="caseTab('testimony')">Testimony</button><button onclick="caseTab('contradictions')">Contradictions</button></div>
+ <div id="caseContent"></div>`);caseTab("evidence");
+}
+function caseTab(type){
+ const labels={evidence:"Evidence",testimony:"Testimony",contradictions:"Contradictions"};
+ const arr=state[type];
+ document.getElementById("caseContent").innerHTML=`<h3>${labels[type]}</h3>${arr.length?arr.map(x=>`<div class="listitem">${x}</div>`).join(""):`<p class="muted">Nothing recorded yet.</p>`}`;
+}
+function openMap(){
+ showModal(`<h2>🗺️ Blackwood Manor</h2><p class="muted">Choose a discovered destination.</p>
+ <div class="choices">
+ ${[
+ ["Grand Ballroom","intro"],["Main Kitchen","kitchen"],["Library","library"],["Upstairs Hallway","trail1"],
+ ["Security Office","security"],["Victoria's Study","study"],["Wine Cellar","cellarDoor"]
+ ].map(x=>`<button class="choice" onclick="closeModal();choose('${x[1]}')">${x[0]}</button>`).join("")}</div>`);
+}
+function useHint(){
+ if(state.hints<=0){toast("No hint tokens remain.");return}
+ state.hints--;state.score=Math.max(0,state.score-5);
+ let hint={
+ intro:"The locked dome may not be as sealed as Victoria claims.",
+ dome:"Try moving the base rather than breaking the lock.",
+ floor:"The frosting and glass are more useful than the watch clasp.",
+ trail1:"Look at the shape of the earliest marks in the frosting.",
+ library:"The brass numbers are already in a meaningful left-to-right order.",
+ study:"Read the ingredient quantities in the order written.",
+ security:"April is 04. Add the eight chandeliers to the month number.",
+ cellarDoor:"It is the final course of a meal.",
+ cellar:"Pickles is reacting to the lower panel, not the door."
+ }[state.scene]||"Compare Victoria's statements with the physical evidence and security records.";
+ toast(`Hint: ${hint}`);updateHUD();
+}
+function openAccusation(){
+ const suspects=["Victoria Blackwood","Chef Coco Crème","Magic Max","Grandma Glitter","Disco Dave","Pickles"];
+ showModal(`<h2>⚖️ Final Accusation</h2>
+ <p>You must identify the culprit and explain the complete crime.</p>
+ <label>Culprit</label><select id="accCulprit">${suspects.map(x=>`<option>${x}</option>`).join("")}</select>
+ <label>Motive</label><select id="accMotive">
+ <option>Insurance fraud and concealment of a replica diamond</option>
+ <option>Revenge over a stolen recipe</option>
+ <option>Gambling debt</option>
+ <option>Hunger</option></select>
+ <label>Blackout method</label><select id="accMethod">
+ <option>Victoria's remote lighting reset</option>
+ <option>Max's stage equipment</option>
+ <option>A storm damaged the mansion</option>
+ <option>Dave unplugged the lights</option></select>
+ <label>Diamond location</label><select id="accLoc">
+ <option>False bottom of the wine cellar refrigeration unit</option>
+ <option>Grandma Glitter's purse</option>
+ <option>Inside Max's hat</option>
+ <option>Buried in the conservatory</option></select>
+ <button class="smallbtn primary" style="margin-top:14px" onclick="submitAccusation()">Present the Case</button>`);
+}
+function submitAccusation(){
+ const culprit=document.getElementById("accCulprit").value;
+ const motive=document.getElementById("accMotive").value;
+ const method=document.getElementById("accMethod").value;
+ const loc=document.getElementById("accLoc").value;
+ const correct=[culprit===GAME.culprit,motive===GAME.motive,method==="Victoria's remote lighting reset",loc==="False bottom of the wine cellar refrigeration unit"];
+ const count=correct.filter(Boolean).length;
+ closeModal();state.ended=true;
+ let title,text,cls="";
+ if(count===4 && state.evidence.length>=6){
+   state.score+=100;title="Perfect Solution: Case Closed";
+   text=`You prove that Victoria staged the theft. She purchased a replica, triggered the blackout using her registered remote, rotated the display chute before the reveal, and sent the cupcake through the dumbwaiter to the cellar. The real diamond was meant to vanish before the next day's independent verification exposed the swap.`;
+ }else if(culprit===GAME.culprit){
+   state.score+=40;title="Correct Culprit, Incomplete Case";
+   text=`You correctly identify Victoria, but gaps in the explanation allow her lawyer to challenge parts of the case. You solved the central mystery, but missed some proof.`;
+ }else{
+   title="Wrong Accusation";cls="bad";text=`Your theory collapses under questioning. The true culprit was Victoria Blackwood, who staged the robbery using the mansion's service system and her lighting remote.`;
+ }
+ const rank=state.score>=200?"Legendary Crime Solver":state.score>=150?"Master Detective":state.score>=100?"Sharp-Eyed Sleuth":state.score>=50?"Rookie Investigator":"Confused Bystander";
+ document.getElementById("main").innerHTML=`<div class="ending ${cls}"><h1>${title}</h1><p>${text}</p><p><strong>Final score:</strong> ${state.score}<br><strong>Rank:</strong> ${rank}</p><button class="smallbtn primary" onclick="restartGame()">Play Again</button></div>`;
+ updateHUD();
+}
+function restartGame(){start()}
+window.onclick=e=>{if(e.target===document.getElementById("modal"))closeModal()}
+start();
+</script>
+</body>
+</html>
