@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090b18">
+<title>Diamond Dessert Heist — 15 Hint Demo</title>
+<style>
+:root{
+  --ink:#080b18; --navy:#10162b; --navy2:#171d39; --purple:#6b46b8;
+  --pink:#ff4f9a; --pink2:#ff92c2; --cream:#fff2d4; --gold:#ffd35e;
+  --white:#fffafc; --muted:#c8c9dc; --green:#60d394; --danger:#ff6978;
+  --stroke:#6f54c9; --shadow:0 18px 45px rgba(0,0,0,.42);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:
+ radial-gradient(circle at 10% 0%,rgba(112,65,191,.28),transparent 27%),
+ radial-gradient(circle at 90% 0%,rgba(255,79,154,.18),transparent 25%),
+ var(--ink);color:var(--white);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+button{font:inherit}
+body{overflow-x:hidden}
+.app{max-width:1200px;margin:auto;padding:14px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  background:rgba(10,13,28,.9);border:2px solid rgba(255,146,194,.45);border-radius:18px;padding:10px 14px;
+  position:sticky;top:8px;z-index:20;backdrop-filter:blur(12px);box-shadow:var(--shadow)}
+.logo{font-weight:1000;letter-spacing:.02em;font-size:clamp(18px,3vw,30px);color:var(--pink2);text-shadow:0 2px 0 #7d2152}
+.logo .diamond{color:#9fe8ff}
+.hud{display:flex;gap:8px;flex-wrap:wrap}
+.hud-pill{background:var(--cream);color:#2a1722;padding:8px 11px;border-radius:999px;font-weight:900;border:2px solid #ffdf9a;min-width:76px;text-align:center}
+.screen{display:none;margin-top:14px}
+.screen.active{display:block}
+.panel{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01)),var(--navy);
+ border:2px solid var(--stroke);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+.home{min-height:720px;display:grid;grid-template-columns:1.3fr .7fr}
+.hero-art{position:relative;min-height:720px;padding:34px;display:flex;flex-direction:column;justify-content:center;
+ background:
+ radial-gradient(circle at 50% 20%,rgba(253,104,171,.23),transparent 25%),
+ linear-gradient(180deg,#181e49 0%,#291643 46%,#10182c 100%)}
+.hero-art:before{content:"";position:absolute;inset:0;background:
+ linear-gradient(120deg,transparent 0 42%,rgba(255,255,255,.06) 43% 45%,transparent 46%),
+ linear-gradient(60deg,transparent 0 40%,rgba(255,255,255,.04) 41% 43%,transparent 44%);pointer-events:none}
+.museum{font-size:clamp(90px,18vw,200px);text-align:center;filter:drop-shadow(0 16px 20px rgba(0,0,0,.5))}
+.title{font-size:clamp(40px,8vw,86px);line-height:.85;text-align:center;font-weight:1000;color:var(--pink2);
+ text-shadow:0 5px 0 #751c4b,0 10px 30px rgba(0,0,0,.7);margin:0}
+.subtitle{text-align:center;font-weight:1000;color:var(--gold);font-size:clamp(18px,3vw,30px);margin:14px 0 22px}
+.side-intro{padding:28px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(180deg,#12182d,#0e1326)}
+.rule-card{background:#f7d9a7;color:#2b1821;border-radius:16px;padding:18px;border:3px solid #fff0cb;box-shadow:0 8px 0 #8c4f52;margin-bottom:16px}
+.rule-card h2{margin:0 0 8px}
+.btn{border:none;border-radius:14px;padding:14px 18px;font-weight:1000;cursor:pointer;transition:.15s;box-shadow:0 5px 0 rgba(0,0,0,.28)}
+.btn:hover{transform:translateY(-1px)} .btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.28)}
+.btn-pink{background:linear-gradient(180deg,#ff67aa,#ed3d89);color:white;border:2px solid #ffb8d6}
+.btn-purple{background:linear-gradient(180deg,#8d6bd0,#6645aa);color:white;border:2px solid #bca7ea}
+.btn-green{background:linear-gradient(180deg,#78e6a9,#42b978);color:#092616;border:2px solid #b8f4d0}
+.btn-cream{background:var(--cream);color:#2a1722;border:2px solid #ffdf9a}
+.btn-wide{width:100%;font-size:18px;margin-top:10px}
+.stage-head{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:17px 18px;background:#31245d;border-bottom:2px solid #7c62d1}
+.stage-head h2{margin:0;font-size:clamp(20px,4vw,32px)}
+.stage-body{padding:18px}
+.two-col{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:16px}
+.museum-room{position:relative;min-height:590px;border-radius:18px;overflow:hidden;border:2px solid #6e51bd;
+ background:
+ linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px) 0 0/100px 100%,
+ linear-gradient(180deg,#54325a 0%,#4a293e 38%,#2a1f31 38%,#2a1f31 100%)}
+.ceiling{position:absolute;top:0;left:0;right:0;height:86px;background:linear-gradient(180deg,#6a3b4a,#3c263c);border-bottom:5px solid #b18055}
+.floor{position:absolute;bottom:0;left:0;right:0;height:220px;background:
+ repeating-linear-gradient(90deg,rgba(0,0,0,.14) 0 2px,transparent 2px 140px),
+ repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 2px,transparent 2px 70px),#5d3b32}
+.chandelier{position:absolute;top:25px;left:50%;transform:translateX(-50%);font-size:64px}
+.display{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);text-align:center}
+.dome{width:230px;height:270px;border-radius:120px 120px 28px 28px;border:6px solid rgba(190,235,255,.75);
+ background:rgba(188,226,255,.12);display:flex;align-items:center;justify-content:center;font-size:95px;
+ box-shadow:inset 0 0 28px rgba(190,235,255,.22),0 14px 30px rgba(0,0,0,.4)}
+.pedestal{width:280px;height:90px;border-radius:50%;background:#a66a54;border:8px solid #d69d72;margin:-14px auto 0}
+.frame{position:absolute;width:110px;height:145px;background:#a66a54;border:9px solid #d4a066;display:flex;align-items:center;justify-content:center;font-size:64px;box-shadow:0 8px 18px rgba(0,0,0,.4)}
+.f1{left:6%;top:22%}.f2{right:6%;top:22%}
+.cakecase{position:absolute;right:8%;bottom:17%;font-size:88px}.case2{left:8%;bottom:18%;font-size:78px}
+.hotspot{position:absolute;border:3px solid #39b9ff;background:rgba(55,185,255,.12);border-radius:50%;width:46px;height:46px;
+ cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:23px;animation:pulse 1.8s infinite}
+.hotspot.found{opacity:.15;pointer-events:none;filter:grayscale(1)}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(55,185,255,.12)}}
+.clue-panel{background:#101526;border:2px solid #40326e;border-radius:16px;padding:15px;height:max-content}
+.clue-panel h3{margin:0 0 10px;color:var(--gold)}
+.clue-card{background:#20263b;border-radius:14px;padding:14px;text-align:center;margin:12px 0;border:1px solid #4b5170}
+.clue-icon{font-size:68px}
+.progress{height:14px;background:#2b3047;border-radius:999px;overflow:hidden;margin:10px 0}
+.progress > div{height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));width:0%;transition:.25s}
+.message{min-height:42px;color:#ffd4e6;font-weight:700}
+.puzzle-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:18px}
+.lock{background:#202129;padding:20px;border-radius:18px;border:4px solid #5c5f69;text-align:center}
+.code-display{font-family:monospace;font-size:42px;letter-spacing:.2em;background:#111319;padding:13px;border-radius:10px;color:var(--gold);margin-bottom:12px}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.key{padding:13px;background:#5d5e61;color:white;border:none;border-radius:9px;font-size:22px;font-weight:900;cursor:pointer}
+.key.enter{background:#59b56c;grid-column:1/3}.key.clear{background:#b4566a}
+.scroll{background:#f2d4a0;color:#36211d;padding:24px;border-radius:20px;border:5px solid #b67951;box-shadow:inset 0 0 20px rgba(90,55,25,.18)}
+.scroll h3{font-size:26px;margin-top:0}.equation{font-size:26px;line-height:1.8}
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:680px;margin:auto}
+.memory-card{aspect-ratio:1;border:none;border-radius:13px;background:linear-gradient(135deg,#a6c8e4,#607c9f);font-size:0;cursor:pointer;border:3px solid #c6dcf0;position:relative}
+.memory-card:before{content:"💎";font-size:34px;position:absolute;inset:0;display:grid;place-items:center;opacity:.35}
+.memory-card.flipped,.memory-card.matched{background:var(--cream);font-size:42px}
+.memory-card.flipped:before,.memory-card.matched:before{display:none}.memory-card.matched{opacity:.55}
+.sequence{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0}
+.seq-btn{width:90px;height:90px;border-radius:18px;border:3px solid #ffd9e8;background:#2a2344;font-size:48px;cursor:pointer}
+.seq-btn.selected{outline:5px solid var(--pink)}
+.seq-output{min-height:65px;background:#0d1121;border-radius:14px;padding:12px;text-align:center;font-size:38px;letter-spacing:10px}
+.diff-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.diff-card{position:relative;min-height:370px;background:linear-gradient(180deg,#321d48,#161c37);border-radius:16px;border:3px solid #6d55ba;overflow:hidden}
+.diff-room{position:absolute;inset:0;padding:22px;font-size:58px;display:grid;grid-template-columns:repeat(3,1fr);align-items:center;justify-items:center}
+.diff-item{cursor:pointer;border-radius:12px;padding:8px}.diff-item.found{outline:4px solid var(--green);background:rgba(96,211,148,.18)}
+.accuse-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.accuse{padding:18px;border-radius:16px;border:3px solid #7458c4;background:#24213e;color:white;text-align:left;cursor:pointer}
+.accuse strong{display:block;color:var(--pink2);font-size:20px;margin-bottom:6px}
+.win{text-align:center;padding:45px 20px;background:radial-gradient(circle at 50% 35%,rgba(255,204,88,.3),transparent 30%),linear-gradient(180deg,#3a1c3f,#10182a)}
+.win .gem{font-size:130px;filter:drop-shadow(0 0 25px rgba(151,235,255,.7))}
+.win h1{font-size:clamp(42px,8vw,90px);color:var(--gold);margin:0;text-shadow:0 4px 0 #7d4d1f}
+.scorecard{display:inline-block;background:#211b35;border:3px solid #684db8;border-radius:18px;padding:18px 30px;margin:20px}
+.modal{position:fixed;inset:0;background:rgba(3,5,14,.84);display:none;place-items:center;padding:18px;z-index:50}
+.modal.show{display:grid}.modal-box{max-width:560px;background:#151a31;border:3px solid var(--pink2);border-radius:20px;padding:22px;box-shadow:var(--shadow)}
+.toast{position:fixed;right:16px;bottom:16px;background:#fff1d3;color:#2a1722;border:3px solid #ffcc69;padding:13px 16px;border-radius:14px;font-weight:900;display:none;z-index:70}
+.toast.show{display:block}
+@media(max-width:850px){
+ .home,.two-col,.puzzle-grid,.diff-wrap{grid-template-columns:1fr}
+ .hero-art{min-height:560px}.side-intro{padding:20px}.museum-room{min-height:560px}
+ .clue-panel{position:static}.topbar{position:static}.accuse-grid{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+ .app{padding:8px}.stage-body{padding:10px}.museum-room{min-height:520px}
+ .dome{width:180px;height:220px}.pedestal{width:220px}.memory-grid{gap:7px}
+ .memory-card.flipped,.memory-card.matched{font-size:31px}.seq-btn{width:70px;height:70px;font-size:38px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo">DIAM💎ND DESSERT HEIST</div>
+    <div class="hud">
+      <div class="hud-pill" id="hintsHud">🔍 15</div>
+      <div class="hud-pill" id="timeHud">⏱ 09:00</div>
+      <div class="hud-pill" id="heartsHud">❤️ 3</div>
+      <div class="hud-pill" id="scoreHud">⭐ 0</div>
+    </div>
+  </div>
+
+  <section class="screen active" id="home">
+    <div class="panel home">
+      <div class="hero-art">
+        <h1 class="title">DIAMOND<br>DESSERT HEIST</h1>
+        <div class="subtitle">15 CLUE DEMO</div>
+        <div class="museum">🏛️🧁💎</div>
+      </div>
+      <div class="side-intro">
+        <div class="rule-card">
+          <h2>Steal back the diamond.</h2>
+          <p>Solve five puzzle rooms, expose the thief, and escape the Dessert Museum before the timer reaches zero.</p>
+        </div>
+        <div class="rule-card">
+          <strong>Included in this demo</strong>
+          <p>🔍 15 hints<br>❤️ 3 hearts<br>⏱ 9-minute timer<br>🧩 5 puzzle types<br>📱 iPad-friendly controls</p>
+        </div>
+        <button class="btn btn-pink btn-wide" onclick="startGame()">PLAY</button>
+        <button class="btn btn-purple btn-wide" onclick="showHow()">HOW TO PLAY</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="hidden">
+    <div class="panel">
+      <div class="stage-head"><h2>Room 1: Hidden Clue Gallery</h2><span>Find five objects</span></div>
+      <div class="stage-body two-col">
+        <div class="museum-room">
+          <div class="ceiling"></div><div class="floor"></div><div class="chandelier">🕯️</div>
+          <div class="frame f1">👩🏻</div><div class="frame f2">🧑🏽</div>
+          <div class="display"><div class="dome">🧁</div><div class="pedestal"></div></div>
+          <div class="cakecase">🎂</div><div class="case2">🍰</div>
+          <button class="hotspot" style="left:11%;top:30%" data-object="ribbon" onclick="findObject(this)">🎀</button>
+          <button class="hotspot" style="right:13%;top:28%" data-object="key" onclick="findObject(this)">🗝️</button>
+          <button class="hotspot" style="left:42%;bottom:13%" data-object="brush" onclick="findObject(this)">🖌️</button>
+          <button class="hotspot" style="right:10%;bottom:24%" data-object="brooch" onclick="findObject(this)">🍒</button>
+          <button class="hotspot" style="left:17%;bottom:17%" data-object="watch" onclick="findObject(this)">⌚</button>
+        </div>
+        <div class="clue-panel">
+          <h3>CLUE <span id="hiddenCount">1</span> OF 5</h3>
+          <div class="clue-card"><div class="clue-icon" id="targetIcon">🎀</div><strong id="targetText">Find the pink ribbon.</strong></div>
+          <div class="progress"><div id="hiddenProgress"></div></div>
+          <div class="message" id="hiddenMsg">Tap the matching object in the museum.</div>
+          <button class="btn btn-pink btn-wide" onclick="useHint()">USE HINT (-1)</button>
+          <button class="btn btn-purple btn-wide" onclick="skipCurrent()">SKIP PUZZLE (-1 heart)</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="code">
+    <div class="panel">
+      <div class="stage-head"><h2>Room 2: Dessert Vault Code</h2><span>Decode the four treats</span></div>
+      <div class="stage-body puzzle-grid">
+        <div class="lock">
+          <h3>ENTER CODE</h3>
+          <div class="code-display" id="codeDisplay">----</div>
+          <div class="keypad">
+            <button class="key" onclick="pressKey(1)">1</button><button class="key" onclick="pressKey(2)">2</button><button class="key" onclick="pressKey(3)">3</button>
+            <button class="key" onclick="pressKey(4)">4</button><button class="key" onclick="pressKey(5)">5</button><button class="key" onclick="pressKey(6)">6</button>
+            <button class="key" onclick="pressKey(7)">7</button><button class="key" onclick="pressKey(8)">8</button><button class="key" onclick="pressKey(9)">9</button>
+            <button class="key enter" onclick="submitCode()">ENTER</button><button class="key" onclick="pressKey(0)">0</button><button class="key clear" onclick="clearCode()">⌫</button>
+          </div>
+          <button class="btn btn-pink btn-wide" onclick="useHint()">USE HINT (-1)</button>
+        </div>
+        <div class="scroll">
+          <h3>CLUE</h3>
+          <p>Four treats, in order sweet.<br>Top to bottom, can't be beat!</p>
+          <div class="equation">🧁 = 7<br>🍩 = 2<br>🍰 = 1<br>🩷 = 4</div>
+          <p><strong>Enter the numbers from top to bottom.</strong></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="memory">
+    <div class="panel">
+      <div class="stage-head"><h2>Room 3: Memory Match</h2><span>Match all six pairs</span></div>
+      <div class="stage-body">
+        <p style="text-align:center;color:var(--muted)">Tap two cards at a time. Matching desserts stay revealed.</p>
+        <div class="memory-grid" id="memoryGrid"></div>
+        <div style="max-width:420px;margin:18px auto">
+          <button class="btn btn-pink btn-wide" onclick="useHint()">USE HINT (-1)</button>
+          <button class="btn btn-purple btn-wide" onclick="skipCurrent()">SKIP PUZZLE (-1 heart)</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="sequence">
+    <div class="panel">
+      <div class="stage-head"><h2>Room 4: Recipe Sequence</h2><span>Rebuild Victoria's secret order</span></div>
+      <div class="stage-body">
+        <div class="scroll" style="max-width:800px;margin:auto">
+          <h3>The note says:</h3>
+          <p>“Start with the treat that has a candle. Next choose the ring-shaped treat. Then the sliced cake. Finish with the pink shell.”</p>
+        </div>
+        <div class="sequence">
+          <button class="seq-btn" data-v="🧁" onclick="pickSeq(this)">🧁</button>
+          <button class="seq-btn" data-v="🍩" onclick="pickSeq(this)">🍩</button>
+          <button class="seq-btn" data-v="🍰" onclick="pickSeq(this)">🍰</button>
+          <button class="seq-btn" data-v="🩷" onclick="pickSeq(this)">🩷</button>
+        </div>
+        <div class="seq-output" id="seqOutput"></div>
+        <div style="max-width:500px;margin:18px auto;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-green" style="flex:1" onclick="submitSequence()">SUBMIT</button>
+          <button class="btn btn-cream" style="flex:1" onclick="resetSequence()">RESET</button>
+          <button class="btn btn-pink" style="flex:1" onclick="useHint()">HINT</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="difference">
+    <div class="panel">
+      <div class="stage-head"><h2>Room 5: Spot the Differences</h2><span>Find three altered details in the right picture</span></div>
+      <div class="stage-body">
+        <div class="diff-wrap">
+          <div class="diff-card"><div class="diff-room">
+            <span>🕯️</span><span>🖼️</span><span>🎀</span>
+            <span>🍰</span><span>💎</span><span>🧁</span>
+            <span>🗝️</span><span>🌹</span><span>⌚</span>
+          </div></div>
+          <div class="diff-card"><div class="diff-room">
+            <span>🕯️</span><span class="diff-item" data-diff="frame" onclick="findDiff(this)">🪞</span><span>🎀</span>
+            <span class="diff-item" data-diff="cake" onclick="findDiff(this)">🎂</span><span>💎</span><span>🧁</span>
+            <span>🗝️</span><span>🌹</span><span class="diff-item" data-diff="watch" onclick="findDiff(this)">⏰</span>
+          </div></div>
+        </div>
+        <p style="text-align:center"><strong id="diffCount">0</strong> of 3 differences found</p>
+        <div style="max-width:430px;margin:auto"><button class="btn btn-pink btn-wide" onclick="useHint()">USE HINT (-1)</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="accuse">
+    <div class="panel">
+      <div class="stage-head"><h2>Final Accusation</h2><span>Who staged the diamond theft?</span></div>
+      <div class="stage-body">
+        <div class="rule-card" style="max-width:760px;margin:0 auto 18px">
+          The clues prove that someone obtained the raspberry frosting, owned the lighting remote, operated the hidden chute, and possessed a replica diamond.
+        </div>
+        <div class="accuse-grid">
+          <button class="accuse" onclick="accuse('victoria')"><strong>Victoria Blackwood</strong>The museum owner and apparent victim.</button>
+          <button class="accuse" onclick="accuse('max')"><strong>Magic Max</strong>A magician who understands disappearing objects.</button>
+          <button class="accuse" onclick="accuse('coco')"><strong>Chef Coco</strong>The pastry chef with frosting access.</button>
+          <button class="accuse" onclick="accuse('dave')"><strong>Disco Dave</strong>A dancer whose watch clasp was found nearby.</button>
+        </div>
+        <div style="max-width:430px;margin:18px auto"><button class="btn btn-pink btn-wide" onclick="useHint()">USE FINAL HINT (-1)</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="win">
+    <div class="panel win">
+      <div class="gem">💎</div>
+      <h1>HEIST SOLVED!</h1>
+      <p>You recovered the Aurora Diamond and exposed Victoria's insurance scheme.</p>
+      <div class="scorecard">
+        <div>Time left: <strong id="finalTime"></strong></div>
+        <div>Hints remaining: <strong id="finalHints"></strong>/15</div>
+        <div>Hearts remaining: <strong id="finalHearts"></strong>/3</div>
+        <div>Final score: <strong id="finalScore"></strong></div>
+      </div>
+      <div><button class="btn btn-pink" onclick="startGame()">PLAY AGAIN</button></div>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="modal"><div class="modal-box" id="modalBox"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const screens=["home","hidden","code","memory","sequence","difference","accuse","win"];
+const hiddenObjects=[
+ {name:"pink ribbon",key:"ribbon",icon:"🎀"},
+ {name:"gold key",key:"key",icon:"🗝️"},
+ {name:"silver decorating brush",key:"brush",icon:"🖌️"},
+ {name:"cherry brooch",key:"brooch",icon:"🍒"},
+ {name:"broken watch",key:"watch",icon:"⌚"}
+];
+let game={};
+let timerId=null;
+let codeInput="";
+let flipped=[];
+let matched=0;
+let seq=[];
+let diffs=0;
+
+function resetGame(){
+ game={hints:15,hearts:3,score:0,time:540,stage:"home",hiddenIndex:0,ended:false};
+ codeInput="";flipped=[];matched=0;seq=[];diffs=0;
+ clearInterval(timerId);timerId=null;
+ document.querySelectorAll(".hotspot").forEach(x=>x.classList.remove("found"));
+ document.querySelectorAll(".diff-item").forEach(x=>x.classList.remove("found"));
+ updateHud();
+}
+function showScreen(id){
+ screens.forEach(s=>document.getElementById(s).classList.toggle("active",s===id));
+ game.stage=id; window.scrollTo({top:0,behavior:"smooth"});
+}
+function startGame(){
+ resetGame();showScreen("hidden");setupHidden();setupMemory();
+ timerId=setInterval(tick,1000);
+}
+function tick(){
+ if(game.ended)return;
+ game.time=Math.max(0,game.time-1);updateHud();
+ if(game.time===0)loseGame("Time ran out before you escaped the museum.");
+}
+function updateHud(){
+ document.getElementById("hintsHud").textContent="🔍 "+game.hints;
+ document.getElementById("timeHud").textContent="⏱ "+fmt(game.time);
+ document.getElementById("heartsHud").textContent="❤️ "+game.hearts;
+ document.getElementById("scoreHud").textContent="⭐ "+game.score;
+}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function setupHidden(){
+ game.hiddenIndex=0;
+ document.getElementById("hiddenCount").textContent="1";
+ document.getElementById("hiddenProgress").style.width="0%";
+ setHiddenTarget();
+}
+function setHiddenTarget(){
+ const o=hiddenObjects[game.hiddenIndex];
+ if(!o){game.score+=250;toast("Gallery cleared! +250");setTimeout(()=>showScreen("code"),650);return}
+ document.getElementById("targetIcon").textContent=o.icon;
+ document.getElementById("targetText").textContent="Find the "+o.name+".";
+ document.getElementById("hiddenCount").textContent=game.hiddenIndex+1;
+ document.getElementById("hiddenMsg").textContent="Tap the matching object in the museum.";
+}
+function findObject(el){
+ const target=hiddenObjects[game.hiddenIndex];
+ if(el.dataset.object===target.key){
+   el.classList.add("found");game.hiddenIndex++;game.score+=80;
+   document.getElementById("hiddenProgress").style.width=(game.hiddenIndex/5*100)+"%";
+   toast("Clue found! +80");updateHud();setHiddenTarget();
+ }else{
+   game.score=Math.max(0,game.score-15);toast("That is not the requested clue. -15");updateHud();
+ }
+}
+function pressKey(n){if(codeInput.length<4){codeInput+=n;renderCode()}}
+function clearCode(){codeInput=codeInput.slice(0,-1);renderCode()}
+function renderCode(){document.getElementById("codeDisplay").textContent=(codeInput+"----").slice(0,4)}
+function submitCode(){
+ if(codeInput==="7214"){game.score+=300;toast("Vault unlocked! +300");updateHud();setTimeout(()=>showScreen("memory"),600)}
+ else{damage("Incorrect code.");codeInput="";renderCode()}
+}
+function setupMemory(){
+ const vals=["🍰","🍩","🧁","🍪","🍓","🍒"];
+ const deck=[...vals,...vals].sort(()=>Math.random()-.5);
+ const grid=document.getElementById("memoryGrid");grid.innerHTML="";
+ deck.forEach((v,i)=>{
+  const b=document.createElement("button");b.className="memory-card";b.dataset.v=v;b.dataset.i=i;b.textContent=v;
+  b.onclick=()=>flipCard(b);grid.appendChild(b);
+ });
+}
+function flipCard(card){
+ if(card.classList.contains("flipped")||card.classList.contains("matched")||flipped.length===2)return;
+ card.classList.add("flipped");flipped.push(card);
+ if(flipped.length===2){
+   if(flipped[0].dataset.v===flipped[1].dataset.v){
+     flipped.forEach(c=>{c.classList.remove("flipped");c.classList.add("matched")});flipped=[];matched++;
+     game.score+=70;updateHud();
+     if(matched===6){game.score+=250;toast("All pairs matched!");setTimeout(()=>showScreen("sequence"),700)}
+   }else{
+     setTimeout(()=>{flipped.forEach(c=>c.classList.remove("flipped"));flipped=[]},650)
+   }
+ }
+}
+function pickSeq(btn){
+ if(seq.length>=4)return;
+ seq.push(btn.dataset.v);btn.classList.add("selected");
+ document.getElementById("seqOutput").textContent=seq.join("");
+}
+function resetSequence(){seq=[];document.getElementById("seqOutput").textContent="";document.querySelectorAll(".seq-btn").forEach(b=>b.classList.remove("selected"))}
+function submitSequence(){
+ if(seq.join("")==="🧁🍩🍰🩷"){game.score+=350;toast("Recipe sequence solved! +350");updateHud();setTimeout(()=>showScreen("difference"),650)}
+ else{damage("That sequence is incorrect.");resetSequence()}
+}
+function findDiff(el){
+ if(el.classList.contains("found"))return;
+ el.classList.add("found");diffs++;game.score+=100;updateHud();
+ document.getElementById("diffCount").textContent=diffs;
+ if(diffs===3){game.score+=250;toast("All differences found!");setTimeout(()=>showScreen("accuse"),700)}
+}
+function useHint(){
+ if(game.hints<=0){toast("No hints remain.");return}
+ game.hints--;game.score=Math.max(0,game.score-25);updateHud();
+ if(game.stage==="hidden"){
+   const k=hiddenObjects[game.hiddenIndex]?.key;const el=document.querySelector('.hotspot[data-object="'+k+'"]');
+   if(el){el.style.boxShadow="0 0 0 12px rgba(255,211,94,.45)";setTimeout(()=>el.style.boxShadow="",1800)}
+   toast("The target is glowing gold.");
+ }else if(game.stage==="code"){toast("Read the numbers from top to bottom: 7, 2, 1, 4.")}
+ else if(game.stage==="memory"){
+   const cards=[...document.querySelectorAll(".memory-card:not(.matched)")];
+   if(cards.length){const v=cards[0].dataset.v;cards.filter(c=>c.dataset.v===v).forEach(c=>c.classList.add("flipped"));setTimeout(()=>cards.filter(c=>c.dataset.v===v).forEach(c=>c.classList.remove("flipped")),1200)}
+   toast("A matching pair was briefly revealed.");
+ }else if(game.stage==="sequence"){toast("The order is cupcake, donut, cake slice, pink heart.");}
+ else if(game.stage==="difference"){
+   const el=document.querySelector(".diff-item:not(.found)");if(el){el.style.outline="5px solid #ffd35e";setTimeout(()=>el.style.outline="",1600)}
+   toast("One difference is highlighted.");
+ }else if(game.stage==="accuse"){toast("The culprit owned both the museum and the registered blackout remote.");}
+}
+function skipCurrent(){
+ damage("Puzzle skipped.");
+ if(game.ended)return;
+ const next={hidden:"code",memory:"sequence"}[game.stage];
+ if(next)setTimeout(()=>showScreen(next),300);
+}
+function damage(msg){
+ game.hearts--;game.score=Math.max(0,game.score-75);updateHud();toast(msg+" -1 heart");
+ if(game.hearts<=0)loseGame("You ran out of detective hearts.");
+}
+function accuse(who){
+ if(who==="victoria"){game.score+=500;finish()}
+ else{damage("That suspect's alibi holds.");if(!game.ended)toast("Wrong accusation. Recheck the final clue.")}
+}
+function finish(){
+ game.ended=true;clearInterval(timerId);
+ game.score+=game.time*2+game.hints*40+game.hearts*150;
+ document.getElementById("finalTime").textContent=fmt(game.time);
+ document.getElementById("finalHints").textContent=game.hints;
+ document.getElementById("finalHearts").textContent=game.hearts;
+ document.getElementById("finalScore").textContent=game.score;
+ showScreen("win");updateHud();
+}
+function loseGame(reason){
+ game.ended=true;clearInterval(timerId);
+ modal(`<h2>CASE FAILED</h2><p>${reason}</p><button class="btn btn-pink btn-wide" onclick="closeModal();startGame()">TRY AGAIN</button>`);
+}
+function showHow(){
+ modal(`<h2>How to Play</h2><p>Complete five rooms before the nine-minute timer expires. Tap hidden clues, solve the vault code, match dessert cards, rebuild the recipe sequence, spot three differences, and accuse the correct suspect.</p><p>You start with <strong>15 hints</strong> and <strong>3 hearts</strong>. Hints reduce your score. Wrong answers or skipped puzzles may cost a heart.</p><button class="btn btn-pink btn-wide" onclick="closeModal()">GOT IT</button>`);
+}
+function modal(html){document.getElementById("modalBox").innerHTML=html;document.getElementById("modal").classList.add("show")}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._id);t._id=setTimeout(()=>t.classList.remove("show"),2200)}
+document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
+resetGame();
+</script>
+</body>
+</html>
